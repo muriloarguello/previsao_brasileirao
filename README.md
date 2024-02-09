@@ -1,6 +1,6 @@
 # Programa Previsão do Brasileirão Série A
 
-![Imagem de Futebol Ilustrativa](img/imagens.jpeg)
+![Imagem de Futebol Ilustrativa](img/imagens.png)
 
 ## Introdução
 Este projeto tem como objetivo mostrar todas as etapas do desenvolvimento de um programa que estima jogos para as rodadas do campeonato brasileiro da Série A.
