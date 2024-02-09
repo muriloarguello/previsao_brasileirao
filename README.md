@@ -26,4 +26,10 @@ Exsitem diversas formas de ser feito o levantamento de requisitos, e uma delas �
 4. Existe alguma taxa de acerto mínima?
     * Não inicialmente. Porém, é possível revisar esse ponto em uma segunda etapa desse projeto.
 
+5. Deve ser utilizado dados dos anos anteriores?
+    * Sim. Deve ser considerado até 5 anos antes. 
 
+## Diagrama do Usuário
+Baseado nas respostas do levantamento de requisitos, é possível elaborar o seguinte diagrama do usuário. 
+
+![Diagrama do Usuário da UML](img/UML_Diagram.png)
