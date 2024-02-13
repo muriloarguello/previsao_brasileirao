@@ -62,4 +62,4 @@ Cenário Alternativo:
 
 Os diagramas de atilidade são criados a fim de detalhar as etapas que serão criadas através dos códigos. Sendo assim, o seguinte diagrama é criado a partir dos cenários:
 
-![Diagrama de Atividades](img/Diagrama de atividades.png)
+![Diagrama de Atividades](img/Diagrama_de_atividades.png)
