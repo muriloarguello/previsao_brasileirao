@@ -48,3 +48,9 @@ Cenário Alternativo:
 * Não ser possível enviar o e-mail, pois o e-mail não é válido.
   * Enviar e-mail do gerenciador do sistema informando que não foi possível enviar as probabilidades para o e-mail determinado. 
   
+## Diagrama de Atividade
+Os diagramas de atilidade são criados a fim de detalhar as etapas que serão criadas através dos códigos. Sendo assim, o seguinte diagrama é criado a partir dos cenários:
+
+### Sistema ativado um dia antes das rodadas às 18 horas
+![Diagrama do Usuário da UML](img/UML_Diagram.png)
+
