@@ -33,3 +33,18 @@ Exsitem diversas formas de ser feito o levantamento de requisitos, e uma delas �
 Baseado nas respostas do levantamento de requisitos, é possível elaborar o seguinte diagrama do usuário. 
 
 ![Diagrama do Usuário da UML](img/UML_Diagram.png)
+
+### Detalhamento dos Cenários
+
+Cenário Principal:
+1. Sistema ativado um dia antes das rodadas às 18 horas.
+2. Programa aquisita os dados atualizados das rodadas. << include >>
+3. Realizar análise para aquisição da probabilidade dos jogos. << include >>
+4. Enviar resultados para e-mail cadastrado. << include >>
+
+Cenário Alternativo:
+* Não acontecerá jogos na data estimada.
+  * Não enviar e-mail com resultados.
+* Não ser possível enviar o e-mail, pois o e-mail não é válido.
+  * Enviar e-mail do gerenciador do sistema informando que não foi possível enviar as probabilidades para o e-mail determinado. 
+  
