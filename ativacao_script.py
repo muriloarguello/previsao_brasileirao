@@ -11,9 +11,13 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from time import sleep
 import pandas as pd
-from datetime import date
-
+from datetime import datetime
+ 
 class Jogos:
+    """
+    Classe responsável pela criação das tabelas com os jogos do brasileirão,
+    assim como as respectivas datas.
+    """
 
     def __init__(self, ano):
         self.ano = ano
@@ -63,7 +67,7 @@ class Jogos:
                     datas_lista, mandante_lista, visitante_lista, rodada = [], [], [], []
                     for partida in range(10):
                         data = self.driver.find_element(By.XPATH,f'/html/body/div[2]/main/div[2]/div/section[1]/section/ul/li[{partida+1}]/div/a/div/div[1]/span[2]').text
-                        datas_lista.append(date(self.ano, int(data.split('/')[-1]), int(data.split('/')[0])))
+                        datas_lista.append(datetime(self.ano, int(data.split('/')[-1]), int(data.split('/')[0])))
                         mandante_lista.append(self.driver.find_element(By.XPATH,f"/html/body/div[2]/main/div[2]/div/section[1]/section/ul/li[{partida+1}]/div/a/div/div[2]/div[1]/span[1]").get_attribute('title'))
                         visitante_lista.append(self.driver.find_element(By.XPATH,f"/html/body/div[2]/main/div[2]/div/section[1]/section/ul/li[{partida+1}]/div/a/div/div[2]/div[3]/span[1]").get_attribute('title'))
                         rodada.append(int(self.rodada_atual))
@@ -86,14 +90,24 @@ class Jogos:
         self.tabela_partidas = jogos_df
         self.driver.quit()
 
-def main(ano):
+
+def Acionamento_Automatico(ano):
 
     jogos_objeto = Jogos(ano)
     jogos_objeto.tabela_partidas()
     jogos_df = jogos_objeto.tabela_partidas
 
-    return jogos_df
+    today = datetime(2023, 6, 6)
+    #today = datetime.today()
+
+    proximas_partidas = jogos_df[jogos_df['Datas'] >= today]
+    proximas_partidas = proximas_partidas[proximas_partidas['Datas']==min(proximas_partidas['Datas'])]
+    
+    d0 = min(proximas_partidas['Datas'])
+    dia_analise =  datetime(d0.year, d0.month, d0.day-1, 18, 0, 0)
+
+    return jogos_df, proximas_partidas, dia_analise
 
 if __name__ == "__main__":
-    jogos_df = main(2023)
+    jogos_df = Acionamento_Automatico(2023)
     print(jogos_df)
