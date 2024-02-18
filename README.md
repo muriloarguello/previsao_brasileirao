@@ -4,18 +4,20 @@
 
 ## Introdução
 
-Este projeto tem como objetivo mostrar todas as etapas do desenvolvimento de um programa que estima jogos para as rodadas do campeonato brasileiro da Série A.
+Este projeto tem como objetivo mostrar todas as etapas do desenvolvimento de um programa que estima jogos para as rodadas do campeonato brasileiro da Série A, e envia os resultados periodicamente por e-mail para o usuário.
 
 Sendo assim, esse projeto será dividido nas seguintes etapas:
 
 1. Levantamento de requisitos.
 2. Desenvolvimento do diagrama de uso de caso.
-3. Desenvolvimento do programa e códigos de teste.
-4. Deploy do programa.
+3. Desenvolvimento do diagrama de atividade.
+4. Desenvolvimento dos códigos do programa
+5. Desenvolvumento dos códigos de teste do programa.
+6. Deploy do programa.
 
 ## Levantamento dos Requisitos
 
-Exsitem diversas formas de ser feito o levantamento de requisitos, e uma delas é respondendo perguntas a fim de levantar e explorar mais informações. Sendo assim, os seguintes questionamentos foram levantados e respondidos.
+Exsitem diversas formas de ser feito o levantamento de requisitos, e uma delas é respondendo perguntas a fim de juntar e explorar mais informações. Com isso, as seguintes perguntas foram feitas e respondidas.
 
 1. Qual é o objetivo principal do programa?
 
@@ -60,104 +62,57 @@ Cenário Alternativo:
 
 ## Diagrama de Atividade
 
-Os diagramas de atilidade são criados a fim de detalhar as etapas que serão criadas através dos códigos. Sendo assim, o seguinte diagrama é criado a partir dos cenários:
+Os diagramas de atividade são criados com o intuito de detalhar as etapas que serão criadas através dos códigos. Consequentemente, o seguinte diagrama foi criado a partir dos cenários:
 
-![Diagrama de Atividades](img/Diagrama_de_atividades.png)
+![Diagrama de Atividades](img/Diagrama_de_atividade.png)
 
-## Aquisição das Datas das Rodadas
+## Criação do Código - Verificação Diária às 18 Horas 
+
+Apesar de somente ser necessário enviar as estimativas dos jogos um dia antes das partidas, é necessário fazer uma verificação diária para ver se irá ocorrer jogos no dia posterior ou não, como visto no diagrama de atividade. Existem diversas formas de executar essa parte do programa e a mesma deve ser definida pelo usuário, pois cada uma tem vantagens e desvantagens. De qualquer forma, abaixo é possível encontrar algumas opções de como essa etapa poderia ser feita:
+* Windows task scheduler + Computador Pessoal - Para os usuários do Windows é possível utilizar a ferramenta "task scheduler" que irá executar o programa no horário desejado.
+    * Vantagens:
+        * Fácil configuração.
+        * Não exige pagamento.
+    * Desvantagens:
+        * Necessário ter o computar ligado no horário que está programado para que o arquivo seja executado, senão não é possível rodar o código. 
+        * Ocupa memória do computador utilizado quando o programa está rodando. 
+
+* Windows task scheduler + Máquina dedicada - É possível utilizar o "Task Scheduler" em uma máquina dedicada como um computador mais antigo ou um Raspberry Pi.
+    * Vantagens:
+        * Fácil configuração.
+        * Não exige pagamento.
+    * Desvantagens:
+        * Necessário ter o computar ligado no horário que está programado para que o arquivo seja executado, senão não é possível rodar o código. 
+        * Necessário ter um segundo equipamento dedicado ao programa, o que exige custo, energia e espaço.
+
+* Github Actions - É possível utilizar o Github Actions para rodar códigos em horas programadas (com uma certa limitação de precisão).
+    * Vantagens:
+        * Código e sistema de automação em um só local.
+        * Não exige pagamento.
+    * Desvantagens:
+        * A conta free tem uma limitação de tempo de execução, ou seja, dependendo da aplicação não será possível utilizar essa opção.
+        * O Github actions é utilizado para diversos processos dentro do Github, então rodar a automação nele pode limitar o uso dos seus recursos.  
+     
+* VPS ou Sistemas de Nuvem - É possível utilizar uma VPS ou um sistema de nuvem para rodar códigos em horas programadas.
+    * Vantagens:
+        * Auto nível de automação. Exige o mínimo de acompanhamento uma vez feita a configuração.
+    * Desvantagens:
+        * Necessário pagamento do recurso utilizado. 
+        * Não é tão simples de configurar. 
+
+* Acionamento diário do usuário - Também é possível que o usuário execute o programa nos horários desejado.
+    * Vantagens:
+        * Não exige pagamento.
+        * Não exige configuração extra.
+    * Desvantagens:
+        * Necessário disciplina do usuário para fazer rodar o programa nos dias desejados.  
+        * Ocupa memória do computador utilizado quando o programa está rodando. 
+
+## Criação do Código - Aquisição dos Dados da Rodada 
 
 A primeira parte do código exige que as datas das partidas sejam aquisitadas. Sendo assim, é utilizado o seguinte código para poder fazer o web scraping do site do globo.com:
 
 ```python
-#importando bibliotecas
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver import ChromeOptions
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from time import sleep
-import pandas as pd
-from datetime import datetime
- 
-class Jogos:
-    """
-    Classe responsável pela criação das tabelas com os jogos do brasileirão,
-    assim como as respectivas datas.
-    """
 
-    def __init__(self, ano):
-        self.ano = ano
-        opts = ChromeOptions()
-        servico=Service(ChromeDriverManager().install())
-        driver=webdriver.Chrome(service=servico, options=opts)
-        self.driver = driver
-    
-    def _rodada_atual_func(self):
-        """definir função para aquisitar a rodada atual"""
-        try:
-            self.rodada_atual = int(self.driver.find_element(By.XPATH,'/html/body/div[2]/main/div[2]/div/section[1]/section/nav/span[2]').text[:2])
-        except:
-            self.rodada_atual = int(self.driver.find_element(By.XPATH,'/html/body/div[2]/main/div[2]/div/section[1]/section/nav/span[2]').text[:1])
 
-    def _primeira_rodada(self):
-        """retornar para a primeira rodada"""
-        while True:
-            check1 = 0
-            try:
-                while True:
-                    self.driver.find_element(By.XPATH,"/html/body/div[2]/main/div[2]/div/section[1]/section/nav/span[1]").click()
-                    Jogos._rodada_atual_func(self)
-                    if self.rodada_atual == 1:
-                        break
-                break
-            except:
-                if check1 == 10:
-                    break
-                else:
-                    sleep(1)
-                    check1 += 1
-
-    def tabela_partidas(self):
-        """criar tabela de jogos com datas, times mandantes e times visitantes"""
-        #item 1
-        self.driver.get("https://ge.globo.com/futebol/brasileirao-serie-a/")
-        self.driver.maximize_window()
-        self.driver.execute_script("window.scrollTo(0, 300);")
-        sleep(3)
-        
-        #item 2
-        Jogos._primeira_rodada(self)
-
-        #item 3
-        jogos_df = pd.DataFrame({'Datas':[], 'Time Mandante': [], 'Time Visitante': [], 'Rodada': []})
-        while True:
-            check1 = 0
-            try:
-                while True:
-                    datas_lista, mandante_lista, visitante_lista, rodada = [], [], [], []
-                    for partida in range(10):
-                        data = self.driver.find_element(By.XPATH,f'/html/body/div[2]/main/div[2]/div/section[1]/section/ul/li[{partida+1}]/div/a/div/div[1]/span[2]').text
-                        datas_lista.append(datetime(self.ano, int(data.split('/')[-1]), int(data.split('/')[0])))
-                        mandante_lista.append(self.driver.find_element(By.XPATH,f"/html/body/div[2]/main/div[2]/div/section[1]/section/ul/li[{partida+1}]/div/a/div/div[2]/div[1]/span[1]").get_attribute('title'))
-                        visitante_lista.append(self.driver.find_element(By.XPATH,f"/html/body/div[2]/main/div[2]/div/section[1]/section/ul/li[{partida+1}]/div/a/div/div[2]/div[3]/span[1]").get_attribute('title'))
-                        rodada.append(int(self.rodada_atual))
-
-                    df = pd.DataFrame({'Datas':datas_lista, 'Time Mandante': mandante_lista, 'Time Visitante': visitante_lista, 'Rodada': rodada})
-                    jogos_df = pd.concat([jogos_df, df])
-                    Jogos._rodada_atual_func(self)
-                    if self.rodada_atual == 38:
-                        break
-                    else:
-                        self.driver.find_element(By.XPATH,"/html/body/div[2]/main/div[2]/div/section[1]/section/nav/span[3]").click()
-                break
-            except:
-                if check1 == 15:
-                    break
-                else:
-                    sleep(1)
-                    check1+=1
-         
-        #item 4                  
-        self.tabela_partidas = jogos_df
-        self.driver.quit()
 ```

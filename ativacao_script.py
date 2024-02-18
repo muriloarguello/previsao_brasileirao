@@ -13,10 +13,9 @@ from time import sleep
 import pandas as pd
 from datetime import datetime
  
-class Jogos:
+class TabelaProximosJogos:
     """
-    Classe responsável pela criação das tabelas com os jogos do brasileirão,
-    assim como as respectivas datas.
+    Classe responsável pela criação das tabelas com os jogos do brasileirão, assim como as respectivas datas.
     """
 
     def __init__(self, ano):
@@ -26,7 +25,7 @@ class Jogos:
         driver=webdriver.Chrome(service=servico, options=opts)
         self.driver = driver
     
-    def _rodada_atual_func(self):
+    def _rodada_atual(self):
         """definir função para aquisitar a rodada atual"""
         try:
             self.rodada_atual = int(self.driver.find_element(By.XPATH,'/html/body/div[2]/main/div[2]/div/section[1]/section/nav/span[2]').text[:2])
@@ -40,7 +39,7 @@ class Jogos:
             try:
                 while True:
                     self.driver.find_element(By.XPATH,"/html/body/div[2]/main/div[2]/div/section[1]/section/nav/span[1]").click()
-                    Jogos._rodada_atual_func(self)
+                    TabelaProximosJogos._rodada_atual(self)
                     if self.rodada_atual == 1:
                         break
                 break
@@ -58,7 +57,7 @@ class Jogos:
         self.driver.maximize_window()
         self.driver.execute_script("window.scrollTo(0, 300);")
         sleep(3)
-        Jogos._primeira_rodada(self)
+        TabelaProximosJogos._primeira_rodada(self)
         jogos_df = pd.DataFrame({'Datas':[], 'Time Mandante': [], 'Time Visitante': [], 'Rodada': []})
         while True:
             check1 = 0
@@ -74,7 +73,7 @@ class Jogos:
 
                     df = pd.DataFrame({'Datas':datas_lista, 'Time Mandante': mandante_lista, 'Time Visitante': visitante_lista, 'Rodada': rodada})
                     jogos_df = pd.concat([jogos_df, df])
-                    Jogos._rodada_atual_func(self)
+                    TabelaProximosJogos._rodada_atual(self)
                     if self.rodada_atual == 38:
                         break
                     else:
@@ -91,14 +90,16 @@ class Jogos:
         self.driver.quit()
 
 
-def Acionamento_Automatico(ano):
+def proximos_jogos(ano):
 
-    jogos_objeto = Jogos(ano)
+    #aquisitar datas das rodadas
+    jogos_objeto = TabelaProximosJogos(ano)
     jogos_objeto.tabela_partidas()
     jogos_df = jogos_objeto.tabela_partidas
 
+    #determinar próximos jogos 
     today = datetime(2023, 6, 6)
-    #today = datetime.today()
+    ##today = datetime.today()
 
     proximas_partidas = jogos_df[jogos_df['Datas'] >= today]
     proximas_partidas = proximas_partidas[proximas_partidas['Datas']==min(proximas_partidas['Datas'])]
@@ -109,5 +110,5 @@ def Acionamento_Automatico(ano):
     return jogos_df, proximas_partidas, dia_analise
 
 if __name__ == "__main__":
-    jogos_df = Acionamento_Automatico(2023)
-    print(jogos_df)
+    jogos_df, proximas_partidas, dia_analise = proximos_jogos(2023)
+    print(jogos_df, proximas_partidas, dia_analise)
